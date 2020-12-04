@@ -45,11 +45,11 @@ getPredicate HGT x = let (hgt, unit) = getHeight x
                               _  -> hgt >= 150 && hgt <= 193
 getPredicate HCL (x:xs) = x == '#' && length xs == 6
 getPredicate ECL x = x `elem` ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
-getPredicate PID x = length x == 9 && (and $ map (`elem` ['0'..'9']) x)
+getPredicate PID x = length x == 9 && all (`elem` ['0'..'9']) x
 
 checkIfFieldValid :: String -> Bool
-checkIfFieldValid str = let (strField, (_:val)) = splitAt 3 str
-                            field = find (\(x, fld) -> x == strField) stringFieldMap
+checkIfFieldValid str = let (strField, _:val) = splitAt 3 str
+                            field = find (\(x, _) -> x == strField) stringFieldMap
                          in case field of 
                                  Just (_, field) -> getPredicate field val
                                  Nothing -> True
@@ -59,5 +59,5 @@ day4Part2 str = let allLines = lines str
                     strippedSpaces = foldl groupBySpace [] allLines
                     hasFields = filter checkIfValid strippedSpaces
                     byWords = map words hasFields
-                    bools   = map (\x -> and $ map checkIfFieldValid x) byWords
+                    bools   = map (all checkIfFieldValid) byWords
                 in  foldl (\x a -> if a then x + 1 else x) 0 bools
