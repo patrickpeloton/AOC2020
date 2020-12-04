@@ -1,0 +1,34 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 0b18415b3ae63354f1e4a93ac8d8f4f0994ab5acfe7485951cbd28e2b34f719d
+
+name:           aoc2020
+version:        0.1.0.0
+category:       Web
+homepage:       https://github.com/githubuser/aoc2020#readme
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2020 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+executable aoc2020
+  main-is: Main.hs
+  other-modules:
+      Day1
+      Day2
+      Day3
+      Paths_aoc2020
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , split
+  default-language: Haskell2010
