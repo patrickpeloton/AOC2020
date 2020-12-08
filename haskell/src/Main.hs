@@ -12,8 +12,8 @@ import Day8
 
 main :: IO ()
 main = do
-  contents <- readFile $ dayInput "day8"
-  print $ day8Part2 contents
+  contents <- readFile $ dayInput "day1"
+  print $ day1Part2 contents
 
 dayInput :: String -> String
 dayInput day = "./inputs/" ++ day
