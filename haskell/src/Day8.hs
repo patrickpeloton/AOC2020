@@ -32,18 +32,22 @@ getAddVal Nop _ i = (0, i + 1)
 getAddVal Acc val i = (val, i + 1)
 getAddVal Jmp val i = (0, val + i)
 
-runInstrcs :: (Int, [Int]) -> [Instruction] -> Int -> Int
+runInstrcs :: (Int, [Int]) -> [Instruction] -> Int -> (Bool, Int)
 runInstrcs (acc, indices) instrcs i = let (cmd, val) = instrcs !! i
                                           (addVal, nexti) = getAddVal cmd val i
                                           newAcc = addVal + acc
                                       in  if nexti `elem` indices
-                                          then newAcc
-                                          else runInstrcs (newAcc, nexti:indices) instrcs nexti
+                                          then (False, newAcc)
+                                          else 
+                                            if nexti == length instrcs
+                                              then (True, newAcc)
+                                              else runInstrcs (newAcc, nexti:indices) instrcs nexti
 
 day8 :: String -> Int
 day8 str = let allLines = lines str
                instrcs = map cmdValTuple allLines
-            in runInstrcs (0, []) instrcs 0
+               (_, val) = runInstrcs (0, []) instrcs 0
+            in val
 
 -- Part2
 swapInstrc :: Instruction -> Instruction
@@ -51,27 +55,16 @@ swapInstrc (Nop, val) = (Jmp, val)
 swapInstrc (Jmp, val) = (Nop, val)
 swapInstrc x = x
 
-terminatesNormally :: (Int, [Int]) -> [Instruction] -> Int -> (Bool, Int)
-terminatesNormally (acc, indices) instrcs i = let (cmd, val) = instrcs !! i
-                                                  (addVal, nexti) = getAddVal cmd val i
-                                                  newAcc = addVal + acc
-                                              in  if nexti `elem` indices
-                                                  then (False, newAcc)
-                                                  else 
-                                                    if nexti == length instrcs
-                                                      then (True, newAcc)
-                                                      else terminatesNormally (newAcc, nexti:indices) instrcs nexti
-
 swapIndex :: Int -> [Instruction] -> [Instruction]
-swapIndex i instrcs = let (l, (r:rs)) = splitAt i instrcs
+swapIndex i instrcs = let (l, r:rs) = splitAt i instrcs
                        in l ++ swapInstrc r : rs
 
 runTerminator :: [[Instruction]] -> Int
 runTerminator [] = 0
-runTerminator (instrcs:rstInstcs) = let (b, val) = terminatesNormally (0, []) instrcs 0
+runTerminator (instrcs:rstInstcs) = let (b, val) = runInstrcs (0, []) instrcs 0
                                     in  if b then val else runTerminator rstInstcs
 
--- day8Part2 :: String -> Int
+day8Part2 :: String -> Int
 day8Part2 str = let allLines = lines str
                     instrcs = map cmdValTuple allLines
                     indicesToSwap = findIndices (\(cmd, _) -> cmd == Jmp || cmd == Nop) instrcs
